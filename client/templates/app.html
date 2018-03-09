@@ -1,32 +1,84 @@
 
   <!-- logo, stock image for now just for sizing -->
-  <header id="pageHeader">
-    <img class="logo" src="https://static.pexels.com/photos/5834/nature-grass-leaf-green.jpg">
+  <header
+    id="pageHeader"
+    ng-show="$ctrl.loggedIn"
+  >
+    <!-- <img class="logo" src="https://static.pexels.com/photos/5834/nature-grass-leaf-green.jpg"> -->
+    <div class="logo">
+      Conan the <br/>
+      <span class="logobarbaric">LIBRARIAN</span>
+    </div>
   </header>
 
   <!--main navbar-->
-  <navbar print="$ctrl.print" toggle="$ctrl.toggleBooks" id="mainNav"></navbar>
+  <navbar
+    print="$ctrl.print"
+    toggle="$ctrl.toggleBooks"
+    logout="$ctrl.logout"
+    id="mainNav"
+    logged="$ctrl.loggedIn"
+    ng-show="$ctrl.loggedIn"
+  ></navbar>
 
   <!--options navbar for sorting view -->
-  <options items="$ctrl.sortOptions" change="$ctrl.changeSort" toggle="$ctrl.toggleView" id="options"></options>
+  <options
+    items="$ctrl.sortOptions"
+    change="$ctrl.changeSort"
+    toggle="$ctrl.toggleView"
+    id="options"
+    add="$ctrl.add"
+    toggle-add="$ctrl.toggleAdd"
+    view="$ctrl.view"
+    user="$ctrl.userId"
+    sort="$ctrl.sort"
+    ng-show="$ctrl.loggedIn"
+    type="$ctrl.currentBookType"
+  >
+  </options>
 
-  <add-book add="$ctrl.addBook" id="addBook"></add-book>
 
   <!--sidebar to display table of contents-->
-  <content-index category="$ctrl.sortByCategory" print="$ctrl.print" sort="$ctrl.sortBy" id="contents"></content-index>
+  <content-index category="$ctrl.sortByCategory" print="$ctrl.print" sort="$ctrl.sortBy" id="contents" ng-show="$ctrl.loggedIn"></content-index>
 
   <!--main view for bookshelf and wishlist, conditionally rendered based on user chosen view type-->
-  <book-list type="$ctrl.currentBookType" 
-             id="bookList" 
-             ng-show="$ctrl.view === 'list'" 
+
+  <login signup="$ctrl.signup" id="loginView" submit="$ctrl.setUsernamePassword" ng-show="!$ctrl.loggedIn"></login>
+  <book-list type="$ctrl.currentBookType"
+             id="bookList"
+             user="$ctrl.userId"
+             set-view=$ctrl.setView
+             ng-show="$ctrl.view === 'list' && $ctrl.loggedIn"
+             sort="$ctrl.sort"
              books=$ctrl.currentBooks>
-            
+
   </book-list>
-  <book-cover-list type="$ctrl.currentBookType" 
-                   ng-show="$ctrl.view === 'cover'" 
-                   id="bookCovers" 
+  <book-cover-list type="$ctrl.currentBookType"
+                   ng-show="$ctrl.view === 'cover' && $ctrl.loggedIn"
+                   set-view=$ctrl.setView
+                   id="bookCovers"
                    books=$ctrl.currentBooks>
-   </book-cover-list>
+  </book-cover-list>
+  <book-detail
+    id="bookDetail"
+    ng-show="$ctrl.view === 'detail' && $ctrl.loggedIn"
+    user-id="$ctrl.userId"
+    update="$ctrl.updateBook"
+    book="$ctrl.selectedBook"
+    cancel="$ctrl.cancelEdit"
+    delete="$ctrl.deleteBook"
+    start-edit="$ctrl.startEdit"
+    edit="$ctrl.edit">
+  </book-detail>
+  <add-book
+    ng-show="$ctrl.view === 'add' && $ctrl.loggedIn"
+    add="$ctrl.addBook"
+    view="$ctrl.view"
+    id="addBook"
+    message="$ctrl.message"
+    >
+  </add-book>
+
 
 
 

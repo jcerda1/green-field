@@ -1,9 +1,10 @@
 // Require dependencies
 const axios = require('axios');
 const xml2js = require('xml2js');
+const _ = require('lodash');
 
 // Require API key(s)
-const { API_KEY } = require('../config/google');
+const API_KEY = require('../config/google');
 
 /**
 
@@ -66,7 +67,7 @@ const extractDDC = result => {
 
 const getBookDetails = isbn => {
   return axios.get(
-    `https://www.googleapis.com/books/v1/volumes?q=isbn=${isbn}&key=${API_KEY}`
+    `https://www.googleapis.com/books/v1/volumes?q=isbn:${isbn}&key=${API_KEY}`
   );
 };
 
@@ -80,6 +81,7 @@ const addDetailsToBook = (book, response) => {
   ) {
     bookData = response.data.items[0].volumeInfo;
     let formattedAuthors = null;
+    console.log(bookData.authors);
     if (bookData && bookData.authors) {
       formattedAuthors = bookData.authors.map((item, index) => {
         let splitName = item.split(' ');
@@ -94,7 +96,8 @@ const addDetailsToBook = (book, response) => {
     // attach properties to book
     book.found = true;
     book.authors = formattedAuthors;
-    book.title = bookData.title;
+    book.title = _.get(bookData, `title`, "Unknown")
+
     book.description = bookData.description;
     book.pages = bookData.pageCount;
 
@@ -103,11 +106,11 @@ const addDetailsToBook = (book, response) => {
     }
     book.format = bookData.printType;
 
-    if (bookData['imageLinks'] && bookData['imageLinks']['thumbnail']) {
-      book.cover = bookData.imageLinks.thumbnail;
-    }
+    // if (bookData['imageLinks'] && bookData['imageLinks']['thumbnail']) {
+    //   book.cover = bookData.imageLinks.thumbnail;
+    // }
 
-    book.categories = bookData.categories;
+    book.cover =  _.get(bookData, `imageLinks.thumbnail`, "Unknown")
   } else {
     book.found = false;
   }
@@ -117,8 +120,15 @@ const addDetailsToBook = (book, response) => {
 
 const buildBook = isbn => {
   return new Promise((resolve, reject) => {
-    let book = {};
-    book.isbn = isbn;
+    let book = {
+      isbn: isbn || 'Unknown',
+      authors: 'Unknown',
+      title: 'Unknown',
+      pages: 'Unknown',
+      published: 'Unknown',
+      cover: 'Unknown',
+      dewey: 'Unknown'
+    };
 
     lookupByISBN(isbn)
       .then(response => {

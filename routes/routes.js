@@ -6,6 +6,54 @@ const router = express.Router();
 const userController = require('../controllers/user');
 const bookController = require('../controllers/book');
 
+// Authentication
+const passport = require('passport');
+const LocalStrategy = require('passport-local').Strategy;
+
+
+/**
+
+CONFIGURE PASSPORT LOGIN STRATEGY
+
+**/
+
+passport.use(new LocalStrategy(
+  function(username, password, done) {
+   
+    userController.getUserByUsername(username, (err, user) => {
+      if (err) {
+        console.log("error: ", err);
+      }
+      if (!user) {
+        return done(null, false, {message: 'Unknown User'});
+      }
+
+      userController.comparePassword(password, user.dataValues.hash, (err, isMatch) => {
+        if (err) {
+          console.log(err);
+        }
+
+        if (isMatch) {
+          return done(null, user);
+        } else {
+          return done(null, false, {message: 'Invalid Password'});
+        }
+
+      });
+    });
+  }
+));
+
+passport.serializeUser(function(user, done) {
+  done(null, user.id);
+});
+
+passport.deserializeUser(function(id, done) {
+  userController.getUserById(id, function(err, user) {
+    done(err, user);
+  });
+});
+
 /**
 
 USER - BOOK ROUTES
@@ -17,15 +65,7 @@ will be implemented at the bottom of this file as needed).
 **/
 
 // CREATE A BOOK AND ASSOCIATE TO CURRENT USER
-// stub for route featuring boolean 'owned' values
 router.post('/users/:id/books/isbn/:isbn/:owned', (req, res) => {
-  // direct to method in Books controller/model handler
-  bookController.postBook(req, res);
-});
-
-// CREATE A BOOK AND ASSOCIATE TO CURRENT USER
-router.post('/users/:id/books/isbn/:isbn', (req, res) => {
-  // direct to method in Books controller/model handler
   bookController.postBook(req, res);
 });
 
@@ -35,21 +75,35 @@ router.get('/users/:user_id/books', (req, res) => {
   userController.getUserBooks(req, res);
 });
 
+
 // DESTROY ASSOCIATION BETWEEN USER AND BOOK
 // Book itself will remain in database
-router.delete('/users/:user_id/books/:book_id', (req, res) => {
-  userController.deleteBook(req, res);
+router.delete('/users/:user_id/books/:record_id', (req, res) => {
+  userController.deleteBookFromUser(req, res);
 });
 
-// Retrieve the information for a specific user
-// And his/her associated books
+
+// Retrieve the information for a specific user and their associated books
 router.get('/users/:id', (req, res) => {
-  userController.getUserWithBooks(req, res);
+  if (req.user.id.toString() === req.params.id) {
+    userController.getUserWithBooks(req, res);   
+  } else {
+    res.redirect('/error');
+  }  
 });
 
-router.get('/users/:id/books/list', (req, res) => {
+
+// UPDATE THE ASSOCIATION BETWEEN USER AND BOOK
+router.put('/users/:id/books/:isbn', (req, res) => {
+  userController.updateUserBook(req, res);
+});
+
+
+//GET THE BOOKLIST FOR EACH USER
+router.get('/users/:id/books/list/:list_type', (req, res) => {
   userController.getUserBookList(req, res);
-})
+});
+
 
 /**
 
@@ -57,37 +111,16 @@ PURE USER ROUTES
 
 **/
 
-router.get('/users', (req, res) => {
-  userController.getUsers(req, res);
+// UPDATE A SPECIFIC USER
+router.put('/users/:id', (req, res) => {
+  //pass in params below
+  userController.updateUser();
 });
 
-// // update a specific user
-// app.put('/users/:id', (req, res) => {
-//   // direct to method in Users controller/model handler
-//   // passing :id from params
-//   res.send('This will return an object containing a status message and updated information for a specific user.');
-// });
+// DESTROY A USER ACCOUNT
+router.delete('/users/:id', (req, res) => {
+  userController.deleteUser(req.params.id);
+});
 
-// // destroy a user account
-// // note: may be deprecated
-// app.delete('/users/:id', (req, res) => {
-//   // direct to method in Users controller/model handler
-//   // passing :id from params
-//   res.send('This will return an object containing a status message confirming deletion of the specific user.');
-// });
-
-// // signin
-// app.post('/signin', (req, res) => {
-//   // direct to method in Users (or Authentication) controller/modle handler
-//   res.send('This will return an object containing a status message confirming login.');
-//   // Note: may choose to issue a server-originating redirect.
-// });
-
-// // logout
-// app.post('/logout', (req, res) => {
-//   // direct to method in Users (or Authentication) controller/modle handler
-//   res.send('This will return an object containing a status message confirming logout.');
-//   // Note: may choose to issue a server-originating redirect.
-// });
 
 module.exports = router;

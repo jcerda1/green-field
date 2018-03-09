@@ -3,6 +3,11 @@ angular.module('BookApp').component('options', {
   bindings: {
     toggle: '<',
     change: '<',
-    items: '<'
+    items: '<',
+    view: '<',
+    toggleAdd: '<',
+    sort: '<',
+    user: '<',
+    type: '<'
   }
 });

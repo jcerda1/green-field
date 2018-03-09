@@ -3,5 +3,8 @@ angular.module('BookApp').component('bookList', {
   bindings: {
     books: '<',
     type: '<',
+    setView: '<',
+    sort: '<',
+    user: '<'
   }
 });

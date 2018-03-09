@@ -1,10 +1,14 @@
 <article>
-  <h1 ng-show="$ctrl.type === 'bookshelf'" class="header"> MY BOOKSHELF <input placeholder= "Search books" ng-model="search" id="searchbar"></h1>
-  <h1 ng-show="$ctrl.type === 'wishlist'" class="header"> MY WISHLIST <input placeholder= "Search books" ng-model="search" id="searchbar"></h1>
+  <h1 ng-show="$ctrl.type === 'bookshelf'" class="header"> MY BOOKSHELF <input placeholder= "Search books" ng-model="search" class="searchbar"></h1>
+  <h1 ng-show="$ctrl.type === 'wishlist'" class="header"> MY WISHLIST <input placeholder= "Search books" ng-model="search" class="searchbar"></h1>
   <div class="wrapper scrollable">
-    <div ng-repeat="book in $ctrl.books">
+    <div ng-repeat="book in $ctrl.books | filter:search">
 
-      <img class="book" ng-src="{{book.cover}}">
+      <img
+        class="book"
+        ng-src="{{book.cover === 'Unknown' ? 'https://islandpress.org/sites/default/files/400px%20x%20600px-r01BookNotPictured.jpg' : book.cover}}"
+        ng-click="$ctrl.setView('detail', book)"
+      >
 
     </div>
   </div>

@@ -1,20 +1,27 @@
 <article>
-  <br>
-  <h1 ng-show="$ctrl.type === 'bookshelf'" class="header">MY BOOKSHELF <input placeholder= "Search books" ng-model="search" id="searchbar"></h1>
-  <h1 ng-show="$ctrl.type === 'wishlist'" class="header">MY WISHLIST <input placeholder= "Search books" ng-model="search" id="searchbar"></h1>
-
-  <br>
-
-  <table class="books" id="bookList">
-    <tr id="tableHeaders">
-      <th> TITLE </th>
-      <th> AUTHOR </th>
-      <th> DEWEY DECIMAL NUMBER </th>
-    </tr>
-    <tr ng-repeat="book in $ctrl.books | filter:search" >
-      <td>{{book.title}}</td>
-      <td>{{book.format}}</td>
-      <td>{{book.dewey}}</td>
-    </tr>
-  </table>
+  <div class="row" class="bookHeader">
+    <div class="col-100">
+      <br>
+      <h1 ng-show="$ctrl.type === 'bookshelf'" class="header">MY BOOKSHELF <input placeholder= "Search books" ng-model="search" class="searchbar"></h1>
+      <h1 ng-show="$ctrl.type === 'wishlist'" class="header">MY WISHLIST <input placeholder= "Search books" ng-model="search" class="searchbar"></h1>
+      <br>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-100">
+      <table class="books" id="bookList">
+        <tr id="tableHeaders">
+          <th> TITLE </th>
+          <th> AUTHOR </th>
+          <th> DEWEY DECIMAL NUMBER </th>
+        </tr>
+        <tr ng-repeat="book in $ctrl.books | filter:search" >
+          <td ng-click="$ctrl.setView('detail', book)">{{book.title}}</td>
+          <td ng-show="book.authors[0].firstName && book.authors[0].lastName">{{book.authors[0].firstName + ' ' + book.authors[0].lastName}}</td>
+          <td ng-show="!book.authors[0].firstName || !book.authors[0].lastName">Unknown author</td>
+          <td>{{book.dewey}}</td>
+        </tr>
+      </table>
+    </div>
+  </div>
 </article>
