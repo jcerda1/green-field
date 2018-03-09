@@ -1,6 +1,9 @@
 angular.module('BookApp').component('app', {
   templateUrl: "./templates/app.html",
   controller: function(conan) {
+    console.log(this)
+    this.isbn = 000000000;
+    this.owned = true;
     this.$onInit = () => {
       //this will be an API call to our server for the books of the logged in user. For now using fake data
       //need to get all books onInit, then call the bookshelf and wishlist functions
@@ -27,7 +30,6 @@ angular.module('BookApp').component('app', {
 
     this.addBook = () => {
       
-      this.postBook()
     };
 
     //allows user to view books by format (list vs. cover)

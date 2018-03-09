@@ -3,6 +3,6 @@
   ISBN:<br>
   <input type="Number" name="ISBN" placeholder="Enter ISBN" value='' id='isbn'><br>
   Owned:<br>
-  <input type="boolean" name="Owned" placeholder="Yes or No" value='' id='owned'><br><br>
+  <input ng-change="$ctrl.updateIsbn()"type="boolean" name="Owned" placeholder="Yes or No" value='' id='owned'><br><br>
   <input type="submit" value="Submit" id='submit'>
 </form>
