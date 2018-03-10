@@ -1,9 +1,6 @@
 angular.module('BookApp').component('app', {
   templateUrl: './templates/app.html',
   controller: function(conan) {
-    console.log(this)
-    this.isbn = 000000000;
-    this.owned = true;
     this.$onInit = () => {
       this.allBooks = window.formattedBooks;
       this.view = 'list';
@@ -59,10 +56,6 @@ angular.module('BookApp').component('app', {
       });
     };
 
-<<<<<<< HEAD
-    this.addBook = () => {
-      
-=======
     this.login = () => {
       conan
         .login(this.userData.username, this.userData.password)
@@ -147,7 +140,6 @@ angular.module('BookApp').component('app', {
           this.view = 'list';
         })
         .catch(err => {});
->>>>>>> 606eedda35ec856ebb5c093ae29cc4079af67a26
     };
 
     //allows user to view books by format (list vs. cover)
