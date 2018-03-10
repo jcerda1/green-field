@@ -83,6 +83,7 @@ angular.module('BookApp').component('app', {
         localStorage.clear();
         this.loggedIn = null;
         this.userData = {};
+        this.setView('list');
       });
     };
 
@@ -103,7 +104,7 @@ angular.module('BookApp').component('app', {
           this.getBookshelf();
           this.getWishlist();
           this.currentBooks = this.bookshelf;
-          this.selectedBook = books[books.length - 1];
+          this.selectedBook = books.filter(b => book.isbn === b.isbn)[0];
         })
         .then(() => {
           this.message = '';
@@ -125,8 +126,12 @@ angular.module('BookApp').component('app', {
             this.getWishlist();
             this.currentBooks = this.bookshelf;
             this.view = 'list';
+            this.edit = false;
           })
-          .catch(err => console.log(err));
+          .catch(err => {
+            this.edit = false;
+            console.log(err);
+          });
       });
     };
 
@@ -298,34 +303,62 @@ angular.module('BookApp').component('app', {
       );
     };
 
-    //optional - if we want to break the books into categores (000, 100) before passing them down?
-    //or maybe we do that logic in the contentIndex component
+    this.filterByAuthor = (alphaBlock, listType) => {
+      if (alphaBlock === 'all') {
+        this.currentBooks = listType;
+      } else if (alphaBlock === 'unknown') {
+        this.currentBooks = listType.filter(book => book.authors[0].lastName === null);
+      } else {
+        this.currentBooks = listType.filter(
+              book => 
+                book.authors[0].lastName && alphaBlock.includes(book.authors[0].lastName[0].toUpperCase())
+            );
+      }
+
+      this.sortByAuthor();
+    };
+
+    this.filterByTitle = (alphaBlock, listType) => {
+       if (alphaBlock === 'all') {
+        this.currentBooks = listType;
+      } else if (alphaBlock === 'unknown') {
+        this.currentBooks = listType.filter(book => book.title === 'Unknown');
+      } else {
+        this.currentBooks = listType.filter(
+              book => 
+                alphaBlock.includes(book.title[0].toUpperCase())
+            );
+      }
+
+      this.sortByTitle();
+    };
+
+    this.filterByDewey = (deweyBlock, listType) => {
+
+      if (deweyBlock === 'all') {
+        this.currentBooks = listType
+      } else if (deweyBlock === 'null') {
+        this.currentBooks = listType.filter(book => book.dewey === null);
+      } else {
+        this.currentBooks = listType.filter(book => Math.floor(parseInt(book.dewey) / 100) * 100 === deweyBlock);
+      }
+      
+      this.sortByDewey();
+    };
+
+    //further filter results with the sidebar using above helper funcitons
+
     this.sortByCategory = deweyOrAlpha => {
       const alpha = ['ABC', 'DEF', 'GHI', 'JKL', 'MNO', 'PQR', 'STU', 'VWXYZ'];
       const listType =
         this.currentBookType === 'bookshelf' ? this.bookshelf : this.wishlist;
 
-      if (this.sortBy === 'dewey' && deweyOrAlpha === 'all') {
-        this.currentBooks = listType;
-        this.sortByDewey();
+      if (this.sortBy === 'author') {
+        this.filterByAuthor(deweyOrAlpha, listType);
+      } else if (this.sortBy === 'title') {
+        this.filterByTitle(deweyOrAlpha, listType);
       } else if (this.sortBy === 'dewey') {
-        this.currentBooks = listType.filter(
-          book => Math.floor(parseInt(book.dewey) / 100) * 100 === deweyOrAlpha
-        );
-        this.sortByDewey();
-      } else if (this.sortBy === 'title' && deweyOrAlpha === 'all') {
-        this.currentBooks = listType;
-        this.sortByTitle();
-      } else {
-        for (var i = 0; i < alpha.length; i++) {
-          if (alpha[i].includes(deweyOrAlpha)) {
-            this.currentBooks = listType.filter(
-              book =>
-                book.title && alpha[i].includes(book.title[0].toUpperCase())
-            );
-            this.sortByTitle();
-          }
-        }
+        this.filterByDewey(deweyOrAlpha, listType);
       }
     };
   }
