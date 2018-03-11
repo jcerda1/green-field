@@ -1,12 +1,12 @@
 # Project Name
 
-> Pithy project description
+> Do you know the Dewey Decimal System? Conan the Librarian does!  This application will help you organize and keep track of your book collection and books you want to collect.  Organize by author, title, or dewey decimal, and download a list of your bookshelf to organize your personal collection.
 
 ## Team
 
-  - __Product Owner__: teamMember
-  - __Scrum Master__: teamMember
-  - __Development Team Members__: teamMember, teamMember
+  - __Product Owner__: Michelle Lockett 
+  - __Scrum Master__: Chris Poole
+  - __Development Team Members__: Jeramiah Cerda, Chris Poole, Michelle Lockett
 
 ## Table of Contents
 
@@ -20,15 +20,32 @@
 
 ## Usage
 
-> Some usage instructions
+> Create your own mysql database locally.  Create a file config/cleardb.js with the following format:
+
+const CLEARDB = {
+ host: 'your-host-url-here',
+ database: 'name-of-your-database-here',
+ uname: 'your-username-here',
+ pword: 'your-password-here'
+};
+module.exports = CLEARDB;
+
+> Set up a google API key.  Create a file config/google.js with the following format:
+
+const API_KEY = `your-googleBooks-API here`;
+module.exports = API_KEY;
+
+Add your entire config folder to .gitignore
+
+From the root directory, npm start
 
 ## Requirements
 
 - Node 0.10.x
-- Redis 2.6.x
-- Postgresql 9.1.x
-- etc
-- etc
+- Mysql
+- Sequelize
+- Angularjs
+- Express
 
 ## Development
 
@@ -36,10 +53,9 @@
 
 From within the root directory:
 
-```sh
-sudo npm install -g bower
+```
 npm install
-bower install
+
 ```
 
 ### Roadmap
