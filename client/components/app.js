@@ -18,6 +18,7 @@ angular.module('BookApp').component('app', {
       this.add = false;
       this.sort = 'dewey';
       this.message = '';
+      this.back = '';
 
       //on init, check to see if there is a stored session id, and if so retrieve books for the logged in user
 
@@ -80,10 +81,11 @@ angular.module('BookApp').component('app', {
 
     this.logout = () => {
       conan.logout().then(() => {
+        this.currentBookType = 'bookshelf';
+        this.setView('list');
         localStorage.clear();
         this.loggedIn = null;
         this.userData = {};
-        this.setView('list');
       });
     };
 
@@ -153,11 +155,18 @@ angular.module('BookApp').component('app', {
     };
 
     this.setView = (view, book) => {
+      if (view === 'detail') {
+        this.back = this.view;
+      }
       this.view = view;
       this.selectedBook = book ? book : null;
 
       if (this.selectedBook) {
         this.originalBookState = angular.copy(this.selectedBook);
+      }
+
+      if (view === 'list') {
+        this.view = 'list';
       }
     };
 
@@ -307,42 +316,45 @@ angular.module('BookApp').component('app', {
       if (alphaBlock === 'all') {
         this.currentBooks = listType;
       } else if (alphaBlock === 'unknown') {
-        this.currentBooks = listType.filter(book => book.authors[0].lastName === null);
+        this.currentBooks = listType.filter(
+          book => book.authors[0].lastName === null
+        );
       } else {
         this.currentBooks = listType.filter(
-              book => 
-                book.authors[0].lastName && alphaBlock.includes(book.authors[0].lastName[0].toUpperCase())
-            );
+          book =>
+            book.authors[0].lastName &&
+            alphaBlock.includes(book.authors[0].lastName[0].toUpperCase())
+        );
       }
 
       this.sortByAuthor();
     };
 
     this.filterByTitle = (alphaBlock, listType) => {
-       if (alphaBlock === 'all') {
+      if (alphaBlock === 'all') {
         this.currentBooks = listType;
       } else if (alphaBlock === 'unknown') {
         this.currentBooks = listType.filter(book => book.title === 'Unknown');
       } else {
-        this.currentBooks = listType.filter(
-              book => 
-                alphaBlock.includes(book.title[0].toUpperCase())
-            );
+        this.currentBooks = listType.filter(book =>
+          alphaBlock.includes(book.title[0].toUpperCase())
+        );
       }
 
       this.sortByTitle();
     };
 
     this.filterByDewey = (deweyBlock, listType) => {
-
       if (deweyBlock === 'all') {
-        this.currentBooks = listType
+        this.currentBooks = listType;
       } else if (deweyBlock === 'null') {
         this.currentBooks = listType.filter(book => book.dewey === null);
       } else {
-        this.currentBooks = listType.filter(book => Math.floor(parseInt(book.dewey) / 100) * 100 === deweyBlock);
+        this.currentBooks = listType.filter(
+          book => Math.floor(parseInt(book.dewey) / 100) * 100 === deweyBlock
+        );
       }
-      
+
       this.sortByDewey();
     };
 
